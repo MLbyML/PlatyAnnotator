@@ -11,11 +11,11 @@
     </parent>
 
     <groupId>sc.fiji</groupId>
-    <artifactId>PlatSeg</artifactId>
+    <artifactId>PlatAnnotator</artifactId>
     <version>0.1.1-SNAPSHOT</version>
 
-    <name>PlatSeg</name>
-    <description>ImageJ Plugin to detect and annotate Platynereis nuclei
+    <name>PlatAnnotator</name>
+    <description>ImageJ Plugin to annotate landmark nuclei in images of Platynereis embryos
     </description>
     <url>Add URL</url>
     <inceptionYear>2019</inceptionYear>
