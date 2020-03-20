@@ -34,7 +34,7 @@ public class OpenFilePanel<I extends IntegerType<I>, T extends NumericType<T>, L
     private JTextField textField;
 
     /*File chooser*/
-    private final JFileChooser fc = new JFileChooser("/home/manan/Desktop/08_SampleData/02_Images/01_Platyneries/16hpf/");
+    private final JFileChooser fc = new JFileChooser("/home/manan/Data/Platynereis/Landmark_Annotations/04/15.03.2020/");
 
     private EventService es;
 

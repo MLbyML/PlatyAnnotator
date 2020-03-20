@@ -77,7 +77,7 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
 
     private JButton saveAffineTransformButton;
 
-    private final JFileChooser fc = new JFileChooser("/home/manan/Desktop/08_SampleData/02_Images/01_Platyneries/16hpf");
+    private final JFileChooser fc = new JFileChooser("/home/manan/Data/Platynereis/Landmark_Annotations/04/15.03.2020/");
 
 
     private EventService es;
@@ -95,6 +95,7 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
     private BlockRealMatrix targetMatrix;
 
     private Matrix affineTransform;
+    private AffineTransform3D affineTransform3D;
 
 
     public TransformImagePanel(final CommandService cs, final EventService es, final ThreadService ts, final OpService ops, final BigDataViewerUI bdvUI) {
@@ -291,7 +292,7 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
                             Img<UnsignedShortType> source = (Img<UnsignedShortType>)
                                     new ImgOpener().openImgs((String) imageList.getSelectedItem()).get(0);
                             Img<UnsignedShortType> target = ArrayImgs.unsignedShorts(source.dimension(0),source.dimension(1), source.dimension(2));
-                            AffineTransform3D affineTransform3D = new AffineTransform3D();
+                            affineTransform3D = new AffineTransform3D();
                             affineTransform3D.set(Double.parseDouble(A00.getText()), 0, 0);
                             affineTransform3D.set(Double.parseDouble(A01.getText()), 0, 1);
                             affineTransform3D.set(Double.parseDouble(A02.getText()), 0, 2);
@@ -312,10 +313,6 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
                                     transformed = RealViews.affine(interpolated, affineTransform3D);
                             RandomAccessibleInterval<UnsignedShortType>
                                     rai = Views.interval(Views.raster(transformed), target);
-                            //ImageJFunctions.show(rai).setDisplayRange(0, 1200);
-
-
-                            //IJ.save(ImageJFunctions.wrap(rai, "transformed"), "/home/manan/Desktop/imgTransformed.tif");
                             bdvUI.addImage(rai, "transformedimage", Color.white);
                             System.out.println("done calculation");
                             return null;
@@ -380,7 +377,7 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
             fileWriter = new FileWriter(fileName);
             for (int i = 0; i < affineTransform.getRowDimension(); i++) {
                 for (int j = 0; j < affineTransform.getColumnDimension(); j++) {
-                    fileWriter.append(String.valueOf(affineTransform.get(i, j)));
+                    fileWriter.append(String.valueOf(affineTransform3D.get(i, j)));
                     fileWriter.append(COMMA_DELIMITER);
 
                 }

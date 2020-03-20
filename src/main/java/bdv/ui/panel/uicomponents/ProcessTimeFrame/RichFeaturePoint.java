@@ -108,6 +108,16 @@ public class RichFeaturePoint {
         return this.isSelected;
     }
 
+    public void setEmpty(){
+        this.x= -1;
+        this.y= -1;
+        this.z= -1;
+        this.scale= -1;
+        this.value= -1;
+        this.red= -1;
+        this.green= -1;
+        this.blue= -1;
+    }
     public void setSelected(boolean b) {
         this.isSelected = b;
     }

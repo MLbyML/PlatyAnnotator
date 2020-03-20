@@ -17,7 +17,7 @@ import org.scijava.ui.swing.widget.SwingInputHarvester;
 
 import javax.swing.*;
 
-@Plugin(type = Command.class, menuPath = "Plugins > PlatAnnotator")
+@Plugin(type = Command.class, menuPath = "Plugins > PlatyAnnotator")
 public class MainCommand<T extends RealType<T> & Type<T>> implements Command {
 
     @Parameter
@@ -51,7 +51,7 @@ public class MainCommand<T extends RealType<T> & Type<T>> implements Command {
     }
 
     private BigDataViewerUI createBDV() {
-        final JFrame frame = new JFrame("PlatAnnotator");
+        final JFrame frame = new JFrame("PlatyAnnotator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         final BigDataViewerUI bdvUI = new BigDataViewerUI<>(frame, ops.context(),

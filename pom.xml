@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>sc.fiji</groupId>
-    <artifactId>PlatAnnotator</artifactId>
+    <artifactId>PlatyAnnotator</artifactId>
     <version>0.1.1-SNAPSHOT</version>
 
-    <name>PlatAnnotator</name>
+    <name>PlatyAnnotator</name>
     <description>ImageJ Plugin to annotate landmark nuclei in images of Platynereis embryos
     </description>
     <url>Add URL</url>

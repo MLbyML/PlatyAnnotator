@@ -1,7 +1,6 @@
 package bdv.ui.panel.uicomponents.ProcessTimeFrame;
 
 
-
 import bdv.util.BdvOverlay;
 import io.scif.img.ImgSaver;
 import net.imglib2.Point;
@@ -68,6 +67,8 @@ public class MyOverlay extends BdvOverlay {
 
         final AffineTransform3D t = new AffineTransform3D();
         getCurrentTransform3D(t);
+
+
         double calibrationFactor = extractScale(t, 0);
         final double[] lPos = new double[3];
         final double[] vPos = new double[3];
@@ -78,8 +79,10 @@ public class MyOverlay extends BdvOverlay {
             p.localize(lPos);
             t.apply(lPos, vPos);
 
-            double dis = vPos[2];
+
             final int size;
+
+            double dis = vPos[2];
             if (Math.abs(dis) <= radius) {
                 size = 2 * (int) Math.ceil(Math.sqrt(Math.pow(radius, 2) - Math.pow(samplingFactor * dis, 2)));
 
@@ -88,28 +91,29 @@ public class MyOverlay extends BdvOverlay {
                 g.setColor(getColor(thresholdedLocalMinimaColours.get(i)));
                 g.fillOval(x, y, size, size);
                 g.setFont(new Font("Serif", Font.BOLD, 20));
-                String s = String.valueOf(i);
+                String s = String.valueOf(thresholdedLocalMinima.get(i).getLabel());
                 FontMetrics fm = g.getFontMetrics();
                 g.setColor(new Color(255, 255, 0));
-                g.drawString(s, (int) vPos[0]+radius,  (int) vPos[1]+radius);
+                g.drawString(s, (int) vPos[0] + radius, (int) vPos[1] + radius);
 
             } else {
                 size = 0;
             }
+
         }
 
         t.apply(lPos_initial, vPos_initial);
         t.apply(lPos_final, vPos_final);
-        int xleft= (int) vPos_initial[0];
+        int xleft = (int) vPos_initial[0];
 
-        int yleft= (int) vPos_initial[1];
-        int xright=(int) vPos_final[0];
+        int yleft = (int) vPos_initial[1];
+        int xright = (int) vPos_final[0];
         int yright = (int) vPos_final[1];
 
-        this.width= (int) (xright - xleft);
-        this.height= (int) (yright - yleft);
-        this.x=xleft;
-        this.y=yleft;
+        this.width = (int) (xright - xleft);
+        this.height = (int) (yright - yleft);
+        this.x = xleft;
+        this.y = yleft;
 
         g.setColor(new Color(255, 0, 0, 150));
         g.setStroke(new BasicStroke(10));
@@ -126,13 +130,17 @@ public class MyOverlay extends BdvOverlay {
         p.localize(lPos_final);
     }
 
-    public RichFeaturePoint getAddedPoint(){
-        int x= (int) (0.5*(this.lPos_initial[0] + this.lPos_final[0]));
-        int y= (int) (0.5*(this.lPos_initial[1] + this.lPos_final[1]));
-        int z= (int) this.lPos_final[2];
-        double radius=Math.sqrt(Math.pow(this.lPos_final[0]-this.lPos_initial[0], 2) + Math.pow(this.lPos_final[1]-this.lPos_initial[1], 2))/2/Math.sqrt(3);
-        int scale= (int) ((radius -this.minScale)/this.stepScale-1);
-        return new RichFeaturePoint(x, y, z, scale, -100, x%255, y%255, z%255);
+    public RichFeaturePoint getAddedPoint(int i) {
+        int x = (int) (0.5 * (this.lPos_initial[0] + this.lPos_final[0]));
+        int y = (int) (0.5 * (this.lPos_initial[1] + this.lPos_final[1]));
+        int z = (int) (0.5 * (this.lPos_initial[2] + this.lPos_final[2]));
+
+
+        double radius = Math.sqrt(Math.pow(this.lPos_final[0] - this.lPos_initial[0], 2) + Math.pow(this.lPos_final[1] - this.lPos_initial[1], 2)) / 2 / Math.sqrt(3);
+        int scale = (int) ((radius - this.minScale) / this.stepScale - 1);
+        RichFeaturePoint point = new RichFeaturePoint(x, y, z, scale, -100, x % 255, y % 255, z % 255);
+        point.setLabel(i + 1);
+        return point;
     }
 
 
@@ -176,16 +184,16 @@ public class MyOverlay extends BdvOverlay {
 
     public void toggleSelected(RealPoint pos) {
 
-        for(int i=0; i<this.getThresholdedLocalMinima().size(); i++){
+        for (int i = 0; i < this.getThresholdedLocalMinima().size(); i++) {
 
-            if(Math.pow(this.getThresholdedLocalMinima().get(i).getX()-pos.getDoublePosition(0), 2) + Math.pow(this.getThresholdedLocalMinima().get(i).getY()-pos.getDoublePosition(1), 2) + Math.pow(this.getSamplingFactor(), 2)*Math.pow(this.getThresholdedLocalMinima().get(i).getZ()-pos.getDoublePosition(2), 2) <= 3*Math.pow(this.getMinScale()+this.getStepScale()*this.getThresholdedLocalMinima().get(i).getScale(), 2)){
-                if(this.getThresholdedLocalMinima().get(i).getSelected()){
+            if (Math.pow(this.getThresholdedLocalMinima().get(i).getX() - pos.getDoublePosition(0), 2) + Math.pow(this.getThresholdedLocalMinima().get(i).getY() - pos.getDoublePosition(1), 2) + Math.pow(this.getSamplingFactor(), 2) * Math.pow(this.getThresholdedLocalMinima().get(i).getZ() - pos.getDoublePosition(2), 2) <= 3 * Math.pow(this.getMinScale() + this.getStepScale() * this.getThresholdedLocalMinima().get(i).getScale(), 2)) {
+                if (this.getThresholdedLocalMinima().get(i).getSelected()) {
                     this.getThresholdedLocalMinima().get(i).setSelected(false);
                     this.getThresholdedLocalMinima().get(i).setRed(this.getThresholdedLocalMinima().get(i).getRedOld());
                     this.getThresholdedLocalMinima().get(i).setGreen(this.getThresholdedLocalMinima().get(i).getGreenOld());
                     this.getThresholdedLocalMinima().get(i).setBlue(this.getThresholdedLocalMinima().get(i).getBlueOld());
 
-                }else{
+                } else {
                     this.getThresholdedLocalMinima().get(i).setSelected(true);
                     this.getThresholdedLocalMinima().get(i).setRed(0);
                     this.getThresholdedLocalMinima().get(i).setGreen(255);
@@ -201,18 +209,20 @@ public class MyOverlay extends BdvOverlay {
     }
 
 
-    public void deleteSelected(){
-        for(int i=this.getThresholdedLocalMinima().size()-1; i>=0; i--){
-            if (this.getThresholdedLocalMinima().get(i).getSelected()){
-                this.getThresholdedLocalMinima().remove(i);
+    public void deleteSelected(int index) {
+
+        for (int i = 0; i < this.getThresholdedLocalMinima().size(); i++) {
+
+            if (thresholdedLocalMinima.get(i).getLabel() == index) {
+                thresholdedLocalMinima.get(i).setEmpty();
             }
 
         }
+
         this.thresholdedLocalMinimaLocations = obtainPointLocations(thresholdedLocalMinima);
         this.thresholdedLocalMinimaRadii = obtainPointRadii(thresholdedLocalMinima);
         this.thresholdedLocalMinimaColours = obtainPointColours(thresholdedLocalMinima);
     }
-
 
 
     private List<RichFeaturePoint> recursiveMinimaFinding(Graph G, List<RichFeaturePoint> input, List<RichFeaturePoint> output, float overlapThreshold) {
@@ -457,7 +467,6 @@ public class MyOverlay extends BdvOverlay {
     public void writeNuclei(String outputPath) {
 
 
-        //final String outputPath = "/home/manan/Desktop/02_Repositories/26_Final/08_CPDExperiments/CPDExperiments/CPD/utils/AnnotatedData/02_Detections/";
         final String DELIMITER = " ";
         final String NEW_LINE_SEPARATOR = "\n";
         FileWriter fileWriter = null;
@@ -465,11 +474,11 @@ public class MyOverlay extends BdvOverlay {
         try {
             fileWriter = new FileWriter(outputPath + "/nuclei.csv");
             Iterator<RichFeaturePoint> iterator = this.thresholdedLocalMinima.iterator();
-            int index = 0;
+
             while (iterator.hasNext()) {
                 RichFeaturePoint point = iterator.next();
                 double scale = minScale + stepScale * point.getScale();
-                fileWriter.append(String.valueOf(index));
+                fileWriter.append(String.valueOf(point.getLabel()));
                 fileWriter.append(DELIMITER);
                 fileWriter.append(String.valueOf(point.getX()));
                 fileWriter.append(DELIMITER);
@@ -479,7 +488,6 @@ public class MyOverlay extends BdvOverlay {
                 fileWriter.append(DELIMITER);
                 fileWriter.append(String.valueOf(scale));
                 fileWriter.append(NEW_LINE_SEPARATOR);
-                index++;
             }
         } catch (IOException e) {
             System.out.println("Error in CSVFileWriter !!!");
@@ -501,7 +509,7 @@ public class MyOverlay extends BdvOverlay {
     public void writeToCSV(String path) {
         final String COMMA_DELIMITER = ",";
         final String NEW_LINE_SEPARATOR = "\n";
-        final String FILE_HEADER = "X, Y, Z, Scale, Value, Red, Green, Blue";
+        final String FILE_HEADER = "Label, X, Y, Z, Scale, Value, Red, Green, Blue";
         FileWriter fileWriter = null;
 
         final String fileName = path + "/Predictions/" + java.time.LocalDateTime.now() + ".csv";
@@ -533,6 +541,8 @@ public class MyOverlay extends BdvOverlay {
 
             while (iterator.hasNext()) {
                 RichFeaturePoint point = iterator.next();
+                fileWriter.append(String.valueOf(point.getLabel()));
+                fileWriter.append(COMMA_DELIMITER);
                 fileWriter.append(String.valueOf(point.getX()));
                 fileWriter.append(COMMA_DELIMITER);
                 fileWriter.append(String.valueOf(point.getY()));
@@ -549,6 +559,7 @@ public class MyOverlay extends BdvOverlay {
                 fileWriter.append(COMMA_DELIMITER);
                 fileWriter.append(String.valueOf(point.getBlue()));
                 fileWriter.append(NEW_LINE_SEPARATOR);
+
 
             }
 

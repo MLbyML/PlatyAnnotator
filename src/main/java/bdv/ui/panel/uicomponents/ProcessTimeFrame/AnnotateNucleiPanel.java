@@ -18,8 +18,6 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +29,15 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
     private List<EventSubscriber<?>> subs;
     private MyOverlay myOverlay;
     private ViewerPanel viewer;
-    private JButton selectNucleiButton;
+
+    private JButton startButton;
     private JButton addNucleiButton;
     private JButton deleteNucleiButton;
     private JButton saveButton;
     private JLabel saveLabel;
+    private JComboBox nucleusBox;
+
+
 
     /* List of Images in bdvui Viewer Panel*/
     private JComboBox imageList;
@@ -49,8 +51,8 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
 
         imageListLabel = new JLabel("Image");
         imageList = new JComboBox();
-        selectNucleiButton = new JButton("Select");
-        selectNucleiButton.setFont(new Font("Serif", Font.BOLD, 14));
+        startButton = new JButton("Start");
+        startButton.setFont(new Font("Serif", Font.BOLD, 14));
         addNucleiButton = new JButton("Add");
         addNucleiButton.setFont(new Font("Serif", Font.ITALIC, 14));
         deleteNucleiButton = new JButton("Delete");
@@ -58,20 +60,33 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
         saveLabel=new JLabel("Save");
         saveButton = new JButton("Browse");
         saveButton.setFont(new Font("Serif", Font.BOLD, 14));
-        setupSelectNucleiButton(bdvUI);
+        nucleusBox =new JComboBox();
+        nucleusBox.addItem("Nucleus 1");
+        nucleusBox.addItem("Nucleus 2");
+        nucleusBox.addItem("Nucleus 3");
+        nucleusBox.addItem("Nucleus 4");
+        nucleusBox.addItem("Nucleus 5");
+        nucleusBox.addItem("Nucleus 6");
+        nucleusBox.addItem("Nucleus 7");
+        nucleusBox.addItem("Nucleus 8");
+        nucleusBox.addItem("Nucleus 9");
+        nucleusBox.addItem("Nucleus 10");
+        nucleusBox.addItem("Nucleus 11");
+        nucleusBox.addItem("Nucleus 12");
+        setupStartButton(bdvUI);
         setupAddNucleiButton(bdvUI);
         setupDeleteNucleiButton(bdvUI);
         setupSaveButton(bdvUI);
         setupPanel();
-        //this.add(imageListLabel);
-        //this.add(imageList, "wrap");
-        this.add(selectNucleiButton );
-        this.add(deleteNucleiButton);
+        this.add(startButton, "wrap");
+        this.add(nucleusBox, "wrap");
         this.add(addNucleiButton, "wrap");
+        this.add(deleteNucleiButton, "wrap");
         this.add(new JSeparator(), "growx, spanx, wrap");
-        this.add(saveLabel);
+        this.add(saveLabel, "wrap");
         this.add(saveButton, "wrap");
     }
+
 
     private void setupSaveButton(BigDataViewerUI bdvUI) {
        saveButton.setBackground(Color.white);
@@ -100,8 +115,6 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
         myOverlay.writeToCSV(path);
         myOverlay.createTGMM(path);
 
-
-
     }
 
 
@@ -110,10 +123,10 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
         this.setLayout(new MigLayout("fillx", "", ""));
     }
 
-    private void setupSelectNucleiButton(BigDataViewerUI bdvUI) {
-        selectNucleiButton.setBackground(Color.white);
-        selectNucleiButton.addActionListener(e -> {
-            if (e.getSource() == selectNucleiButton) {
+    private void setupStartButton(BigDataViewerUI bdvUI) {
+        startButton.setBackground(Color.white);
+        startButton.addActionListener(e -> {
+            if (e.getSource() == startButton) {
                 float startThreshold=-100;
                 float currentThreshold=-100;
                 List<RichFeaturePoint> localMinima = new ArrayList<>();
@@ -124,7 +137,7 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
                 bdvUI.getBDVHandlePanel().getViewerPanel().requestRepaint();
                 viewer = bdvUI.getBDVHandlePanel().getViewerPanel();
                 viewer.getDisplay().addHandler(new MyListener());
-                System.out.println(viewer.getState().getCurrentSource());
+
 
             }
         });
@@ -160,7 +173,7 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
     private void toggleSelected(MouseEvent e) {
         final RealPoint pos = new RealPoint(3);
         viewer.getGlobalMouseCoordinates(pos);
-        System.out.println(pos);
+
         myOverlay.toggleSelected(pos);
         viewer.requestRepaint();
 
@@ -176,7 +189,7 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
     void updateSize(MouseEvent e) {
         final RealPoint pos = new RealPoint(3);
         viewer.getGlobalMouseCoordinates(pos);
-        System.out.println(pos);
+
         myOverlay.setWidthHeight(pos);
         viewer.requestRepaint();
 
@@ -192,8 +205,8 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
         this.addNucleiButton.setBackground(Color.WHITE);
         addNucleiButton.addActionListener(e -> {
             if (e.getSource() == addNucleiButton) {
-                myOverlay.add(myOverlay.getAddedPoint());
-                viewer.requestRepaint();
+                myOverlay.add(myOverlay.getAddedPoint(nucleusBox.getSelectedIndex()));
+               viewer.requestRepaint();
             }
         });
 
@@ -204,7 +217,7 @@ public class AnnotateNucleiPanel<I extends IntegerType<I>, T extends NumericType
         this.deleteNucleiButton.setBackground(Color.WHITE);
         deleteNucleiButton.addActionListener(e -> {
             if (e.getSource() == deleteNucleiButton) {
-                myOverlay.deleteSelected();
+                myOverlay.deleteSelected(nucleusBox.getSelectedIndex() + 1); // label is always 1+ combobox.selected_item
                 viewer.requestRepaint();
             }
         });
