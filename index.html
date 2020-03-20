@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to PlatAnnotator’s documentation! &mdash; PlatAnnotator 1.0.0 documentation</title>
+  <title>Welcome to PlatyAnnotator’s documentation! &mdash; PlatyAnnotator 1.0.0 documentation</title>
   
 
   
@@ -45,11 +45,11 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search"  style="background: white" >
+        <div class="wy-side-nav-search" >
           
 
           
-            <a href="#" class="icon icon-home"> PlatAnnotator
+            <a href="#" class="icon icon-home"> PlatyAnnotator
           
 
           
@@ -81,7 +81,7 @@
             
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Welcome to <strong>PlatAnnotator</strong>’s documentation!</a></li>
+<li><a class="reference internal" href="#">Welcome to <strong>PlatyAnnotator</strong>’s documentation!</a></li>
 <li><a class="reference internal" href="#d-viewer">3D Viewer</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#open-image">Open Image</a></li>
@@ -101,7 +101,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">PlatAnnotator</a>
+          <a href="#">PlatyAnnotator</a>
         
       </nav>
 
@@ -132,7 +132,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome to <strong>PlatAnnotator</strong>’s documentation!</li>
+      <li>Welcome to <strong>PlatyAnnotator</strong>’s documentation!</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -151,21 +151,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-platannotator-s-documentation">
-<h1>Welcome to <strong>PlatAnnotator</strong>’s documentation!<a class="headerlink" href="#welcome-to-platannotator-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="line-block">
-<div class="line"><strong>PlatAnnotator</strong> is an ImageJ plugin aimed at annotating landmark nuclei in images of <em>in-situ</em> <em>Platyneries dumerilii</em> embryos.</div>
-<div class="line">These <em>landmark nuclei</em> change very less with time, thus making them of interest as <em>invariant keypoints</em>.</div>
-<div class="line">A desired product from using this tool is obtaining <strong>training data</strong> which would allow one to train a convolutional neural network. Such a network would accept volumetric images of embryos as input and predict the locations of these keypoints.</div>
-<div class="line">This, in turn, would allow the user to render all volumetric images in the same <em>pose</em>.</div>
-</div>
+  <div class="section" id="welcome-to-platyannotator-s-documentation">
+<h1>Welcome to <strong>PlatyAnnotator</strong>’s documentation!<a class="headerlink" href="#welcome-to-platyannotator-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>PlatyAnnotator</strong> is an ImageJ plugin aimed at annotating landmark nuclei in images of <em>in-situ</em> <em>Platyneries dumerilii</em> embryos. These <em>landmark nuclei</em> change very less with time, thus making them of interest as <em>invariant keypoints</em>. A desired product from using this tool is obtaining <strong>training data</strong> which would allow one to train a convolutional neural network. Such a network would accept volumetric images of embryos as input and predict the locations of these keypoints. This, in turn, would allow the user to render all volumetric images in the same <em>pose</em>.</p>
 <p>Preparing annotation data through this pipeline broadly requires two steps</p>
 <ul class="simple">
-<li><p>Saving transformaton matrix file prepared through 3D Viewer.</p></li>
-<li><p>Loading transformation matrix file from above in PlatAnnotator.</p></li>
+<li><p>Saving transformation matrix file prepared through <cite>3D Viewer</cite></p></li>
+<li><p>Loading transformation matrix file from above in <cite>PlatyAnnotator</cite> and annotating nuclei</p></li>
 </ul>
 <p>These steps are described in more detail below.</p>
-<div class="toctree-wrapper compound">
+<div style="text-align: center; margin-bottom: 2em;">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/T5ZaLIcIXzM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div><div class="toctree-wrapper compound">
 </div>
 </div>
 <div class="section" id="d-viewer">
@@ -224,7 +221,7 @@
 <li><p>Click on <em>Select</em></p></li>
 <li><p>Drag and make an oval on the nucleus of interest</p></li>
 <li><p>Click on * Add*</p></li>
-<li><p>Continue to annotate until 10 such nuclei locations are obtained</p></li>
+<li><p>Continue to annotate until 10-12 such nuclei locations are obtained</p></li>
 <li><p>Save Results</p></li>
 </ul>
 <p><em>Important</em> Here it is essential to note that the nuclei should be labeled in the same sequence. So Nuclei 3 in Embryo 1 should correspond to the same structure of interest in Embryo 2, for example</p>
@@ -267,18 +264,6 @@
 
   
   
-    
-    <!-- Theme Analytics -->
-    <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-XXXXXXX-1', 'auto');
-    ga('send', 'pageview');
-    </script>
-
     
    
 

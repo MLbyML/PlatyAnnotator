@@ -3,19 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to **PlatAnnotator**'s documentation!
+Welcome to **PlatyAnnotator**'s documentation!
 ==============================================
-| **PlatAnnotator** is an ImageJ plugin aimed at annotating landmark nuclei in images of *in-situ* *Platyneries dumerilii* embryos. 
-| These *landmark nuclei* change very less with time, thus making them of interest as *invariant keypoints*.
-| A desired product from using this tool is obtaining **training data** which would allow one to train a convolutional neural network. Such a network would accept volumetric images of embryos as input and predict the locations of these keypoints. 
-| This, in turn, would allow the user to render all volumetric images in the same *pose*.
+**PlatyAnnotator** is an ImageJ plugin aimed at annotating landmark nuclei in images of *in-situ* *Platyneries dumerilii* embryos. These *landmark nuclei* change very less with time, thus making them of interest as *invariant keypoints*. A desired product from using this tool is obtaining **training data** which would allow one to train a convolutional neural network. Such a network would accept volumetric images of embryos as input and predict the locations of these keypoints. This, in turn, would allow the user to render all volumetric images in the same *pose*.
 
 Preparing annotation data through this pipeline broadly requires two steps
 
-* Saving transformaton matrix file prepared through 3D Viewer.
-* Loading transformation matrix file from above in PlatAnnotator.
+* Saving transformation matrix file prepared through `3D Viewer`
+* Loading transformation matrix file from above in `PlatyAnnotator` and annotating nuclei
 
 These steps are described in more detail below.
+
+.. raw:: html
+
+    <div style="text-align: center; margin-bottom: 2em;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/T5ZaLIcIXzM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
 
 .. toctree::
    :maxdepth: 2
@@ -75,7 +78,7 @@ Annotate Nuclei
 * Click on *Select*
 * Drag and make an oval on the nucleus of interest
 * Click on * Add*
-* Continue to annotate until 10 such nuclei locations are obtained 
+* Continue to annotate until 10-12 such nuclei locations are obtained 
 * Save Results
 
 *Important* Here it is essential to note that the nuclei should be labeled in the same sequence. So Nuclei 3 in Embryo 1 should correspond to the same structure of interest in Embryo 2, for example
