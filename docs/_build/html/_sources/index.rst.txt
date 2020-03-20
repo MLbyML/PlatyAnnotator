@@ -63,7 +63,7 @@ Transform Image
 * Ensure that *Reflect* checkbox is ticked
 * Click on *Generate*
 * Click on *Run*
-* If the transformed image is not visible in the viewer panel, play with :math:`A_{03}, A_{13} \text{and} A_{23}`. For example, add 200 to these cells and click on *Run* again
+* If the transformed image is not visible in the viewer panel, play with :math:`A_{03}, A_{13} \text{and} A_{23}`. For example, add 400 to any of these cells and click on *Run* again
 * If the transformed image is visible, then go to *Selection* card
 * Hide the original image and other non-functional versions
 * Save Affine Transform at any preferred location by selecting *Browse*
