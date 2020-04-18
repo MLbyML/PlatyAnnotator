@@ -27,13 +27,12 @@ public class MyOverlay extends BdvOverlay {
     private double stepScale;
     private double maxScale;
 
-    private List<RichFeaturePoint> localMinima;
     private List<RichFeaturePoint> thresholdedLocalMinima;
     private List<Point> thresholdedLocalMinimaLocations;
     private List<Float> thresholdedLocalMinimaRadii;
     private List<Point> thresholdedLocalMinimaColours;
 
-    private float startThreshold;
+
     private float currentThreshold;
     private int numDims;
 
@@ -46,15 +45,14 @@ public class MyOverlay extends BdvOverlay {
     private double[] vPos_initial = new double[3];
     private double[] vPos_final = new double[3];
 
-    public MyOverlay(int axis, double samplingFactor, double minScale, double stepScale, double maxScale, List<RichFeaturePoint> localMinima, float startThreshold, float currentThreshold, int numDims) {
+    public MyOverlay(int axis, double samplingFactor, double minScale, double stepScale, double maxScale, List<RichFeaturePoint> thresholdedLocalMinima,  int numDims) {
         this.axis = axis;
         this.samplingFactor = samplingFactor;
-        this.localMinima = localMinima;
+        this.thresholdedLocalMinima = thresholdedLocalMinima;
+
         this.minScale = minScale;
         this.stepScale = stepScale;
         this.maxScale = maxScale;
-        this.startThreshold = startThreshold;
-        this.currentThreshold = currentThreshold;
         this.numDims = numDims;
 
     }
@@ -144,17 +142,7 @@ public class MyOverlay extends BdvOverlay {
     }
 
 
-    public void setThresholdedLocalMinima(float threshold) {
-        thresholdedLocalMinima = new ArrayList<>();
-        for (RichFeaturePoint richFeaturePoint : localMinima) {
-            if (richFeaturePoint.getValue() <= threshold) {
-                // Change for dark blobs
-                thresholdedLocalMinima.add(richFeaturePoint);
-            }
-
-        }
-
-
+    public void setThresholdedLocalMinima() {
         /*Split into pointLocations, pointRadii and pointColours*/
         this.thresholdedLocalMinimaLocations = obtainPointLocations(thresholdedLocalMinima);
         this.thresholdedLocalMinimaRadii = obtainPointRadii(thresholdedLocalMinima);
@@ -464,6 +452,10 @@ public class MyOverlay extends BdvOverlay {
         return this.thresholdedLocalMinimaLocations.size();
     }
 
+
+
+
+
     public void writeNuclei(String outputPath) {
 
 
@@ -472,22 +464,25 @@ public class MyOverlay extends BdvOverlay {
         FileWriter fileWriter = null;
 
         try {
-            fileWriter = new FileWriter(outputPath + "/nuclei.csv");
+            fileWriter = new FileWriter(outputPath);
             Iterator<RichFeaturePoint> iterator = this.thresholdedLocalMinima.iterator();
 
             while (iterator.hasNext()) {
                 RichFeaturePoint point = iterator.next();
                 double scale = minScale + stepScale * point.getScale();
-                fileWriter.append(String.valueOf(point.getLabel()));
-                fileWriter.append(DELIMITER);
-                fileWriter.append(String.valueOf(point.getX()));
-                fileWriter.append(DELIMITER);
-                fileWriter.append(String.valueOf(point.getY()));
-                fileWriter.append(DELIMITER);
-                fileWriter.append(String.valueOf(point.getZ()));
-                fileWriter.append(DELIMITER);
-                fileWriter.append(String.valueOf(scale));
-                fileWriter.append(NEW_LINE_SEPARATOR);
+                if(point.getScale()!=-1){
+                    fileWriter.append(String.valueOf(point.getLabel()));
+                    fileWriter.append(DELIMITER);
+                    fileWriter.append(String.valueOf(point.getX()));
+                    fileWriter.append(DELIMITER);
+                    fileWriter.append(String.valueOf(point.getY()));
+                    fileWriter.append(DELIMITER);
+                    fileWriter.append(String.valueOf(point.getZ()));
+                    fileWriter.append(DELIMITER);
+                    fileWriter.append(String.valueOf(scale));
+                    fileWriter.append(NEW_LINE_SEPARATOR);
+                }
+
             }
         } catch (IOException e) {
             System.out.println("Error in CSVFileWriter !!!");
@@ -505,122 +500,6 @@ public class MyOverlay extends BdvOverlay {
 
     }
 
-
-    public void writeToCSV(String path) {
-        final String COMMA_DELIMITER = ",";
-        final String NEW_LINE_SEPARATOR = "\n";
-        final String FILE_HEADER = "Label, X, Y, Z, Scale, Value, Red, Green, Blue";
-        FileWriter fileWriter = null;
-
-        final String fileName = path + "/Predictions/" + java.time.LocalDateTime.now() + ".csv";
-        if (new File(path, "Predictions").exists()) {
-            //Do noting
-        } else {
-            new File(path, "Predictions").mkdir();
-        }
-
-        try {
-            fileWriter = new FileWriter(fileName);
-            fileWriter.append(String.valueOf(minScale));
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append(String.valueOf(stepScale));
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append(String.valueOf(maxScale));
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append(String.valueOf(samplingFactor));
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append(String.valueOf(axis));
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append(String.valueOf(startThreshold));
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append(String.valueOf(currentThreshold));
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append(FILE_HEADER.toString());
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            Iterator<RichFeaturePoint> iterator = this.localMinima.iterator();
-
-            while (iterator.hasNext()) {
-                RichFeaturePoint point = iterator.next();
-                fileWriter.append(String.valueOf(point.getLabel()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getX()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getY()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getZ()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getScale()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getValue()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getRed()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getGreen()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(String.valueOf(point.getBlue()));
-                fileWriter.append(NEW_LINE_SEPARATOR);
-
-
-            }
-
-        } catch (Exception e) {
-            System.out.println("Error in CSVFileWriter !!!");
-            e.printStackTrace();
-        } finally {
-
-            try {
-                fileWriter.flush();
-                fileWriter.close();
-            } catch (IOException e) {
-                System.out.println("Error while flushing/closing fileWriter !!!");
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-    public void createTGMM(String path) {
-        FileWriter fileWriter = null;
-        final String NEW_LINE_SEPARATOR = "\n";
-        final String fileName = path + "/TGMM/" + java.time.LocalDateTime.now() + ".xml";
-        if (new File(path, "TGMM").exists()) {
-            // Do nothing
-        } else {
-            new File(path, "TGMM").mkdir();
-        }
-        try {
-            fileWriter = new FileWriter(fileName);
-            fileWriter.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            fileWriter.append("<document>");
-            fileWriter.append(NEW_LINE_SEPARATOR);
-            Iterator<RichFeaturePoint> iterator = this.thresholdedLocalMinima.iterator();
-            int index = 0;
-            while (iterator.hasNext()) {
-                RichFeaturePoint point = iterator.next();
-                double scale = minScale + stepScale * point.getScale();
-                String information = "<GaussianMixtureModel id=\"" + index + "\" dims=\"3\" splitScore=\"5\" scale=\"1 \" nu=\"10\" beta=\"-1\" alpha=\"-1\" lineage=\"-1\" parent=\"-1\" m=\"" + point.getX() + " " + point.getY() + " " + point.getZ() + "\" W=\"0.02 0 0 0 0.02 0 0 0 0.02 \" nuPrior=\"-1\" betaPrior=\"-1\" alphaPrior=\"-1\" distMRFPrior=\"-1\" mPrior=\"" + point.getX() + " " + point.getY() + " " + point.getZ() + "\" WPrior=\"0.02 0 0 0 0.02 0 0 0 0.02\" svIdx=\" \" LOGScale=\"" + scale + "\"></GaussianMixtureModel> ";
-                fileWriter.append(information);
-                fileWriter.append(NEW_LINE_SEPARATOR);
-                index++;
-            }
-            fileWriter.append("</document>");
-        } catch (Exception e) {
-            System.out.println("Error in CSVFileWriter !!!");
-            e.printStackTrace();
-        } finally {
-
-            try {
-                fileWriter.flush();
-                fileWriter.close();
-            } catch (IOException e) {
-                System.out.println("Error while flushing/closing fileWriter !!!");
-                e.printStackTrace();
-            }
-        }
-
-
-    }
 
 
     private static double extractScale(final AffineTransform3D transform, final int axis) {
@@ -653,10 +532,6 @@ public class MyOverlay extends BdvOverlay {
         return this.samplingFactor;
     }
 
-    public List<RichFeaturePoint> getLocalMinima() {
-        return this.localMinima;
-    }
-
     public List<RichFeaturePoint> getThresholdedLocalMinima() {
         return this.thresholdedLocalMinima;
     }
@@ -665,17 +540,6 @@ public class MyOverlay extends BdvOverlay {
         return this.thresholdedLocalMinimaLocations;
     }
 
-    public void setCurrentThreshold(float currentThreshold) {
-        this.currentThreshold = currentThreshold;
-    }
-
-    public float getCurrentThreshold() {
-        return this.currentThreshold;
-    }
-
-    public float getStartThreshold() {
-        return startThreshold;
-    }
 
     public void createImage(String absolutePath, long[] dimensions) {
         Img<UnsignedByteType> outputRed = ArrayImgs.unsignedBytes(dimensions);
@@ -726,18 +590,14 @@ public class MyOverlay extends BdvOverlay {
     }
 
 
-    public void add(RichFeaturePoint addedPoint) {
-        this.thresholdedLocalMinima.add(addedPoint);
+    public void add(int index, RichFeaturePoint addedPoint) {
+        this.thresholdedLocalMinima.get(index).set(addedPoint);
         this.thresholdedLocalMinimaLocations = obtainPointLocations(thresholdedLocalMinima);
         this.thresholdedLocalMinimaRadii = obtainPointRadii(thresholdedLocalMinima);
         this.thresholdedLocalMinimaColours = obtainPointColours(thresholdedLocalMinima);
     }
 
-    public void setGeneExpression(int i, String text, double val) {
-        this.thresholdedLocalMinima.get(i).setGeneExpression(text, val);
 
-
-    }
 }
 
 

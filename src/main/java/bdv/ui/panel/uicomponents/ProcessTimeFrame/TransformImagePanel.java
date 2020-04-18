@@ -18,8 +18,6 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.math.linear.BlockRealMatrix;
-import org.apache.commons.math.linear.QRDecompositionImpl;
-import org.apache.commons.math.linear.RealMatrix;
 import org.scijava.command.CommandService;
 import org.scijava.event.EventService;
 import org.scijava.event.EventSubscriber;
@@ -77,7 +75,7 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
 
     private JButton saveAffineTransformButton;
 
-    private final JFileChooser fc = new JFileChooser("/home/manan/Data/Platynereis/Landmark_Annotations/04/15.03.2020/");
+    private JFileChooser fc = new JFileChooser("/home/manan/Data/Platynereis/Landmark_Annotations/04/15.03.2020/");
 
 
     private EventService es;
@@ -111,24 +109,24 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
         affineTransformTextField = new JTextField("", 20);
         saveAffineTransformLabel = new JLabel("Save Affine Transform");
         saveAffineTransformButton = new JButton("Browse");
-        generate= new JButton("Generate");
+        generate = new JButton("Generate");
         reflect = new JCheckBox("Reflect ", true);
         reflect.setFont(new Font("Serif", Font.BOLD, 14));
         setupBrowseAffineTransformButton();
-        setupSaveAffineTransformButton();
+        setupSaveAffineTransformButton(bdvUI);
         runButton = new JButton("Run");
-        A00=new JTextField(" ", 10);
-        A01=new JTextField(" ", 10);
-        A02=new JTextField(" ", 10);
-        A03=new JTextField(" ", 10);
-        A10=new JTextField(" ", 10);
-        A11=new JTextField(" ", 10);
-        A12=new JTextField(" ", 10);
-        A13=new JTextField(" ", 10);
-        A20=new JTextField(" ", 10);
-        A21=new JTextField(" ", 10);
-        A22=new JTextField(" ", 10);
-        A23=new JTextField(" ", 10);
+        A00 = new JTextField(" ", 10);
+        A01 = new JTextField(" ", 10);
+        A02 = new JTextField(" ", 10);
+        A03 = new JTextField(" ", 10);
+        A10 = new JTextField(" ", 10);
+        A11 = new JTextField(" ", 10);
+        A12 = new JTextField(" ", 10);
+        A13 = new JTextField(" ", 10);
+        A20 = new JTextField(" ", 10);
+        A21 = new JTextField(" ", 10);
+        A22 = new JTextField(" ", 10);
+        A23 = new JTextField(" ", 10);
         setupGenerateButton(bdvUI);
         setupRunButton(bdvUI);
 
@@ -186,11 +184,17 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
 
                         @Override
                         public T call() throws Exception {
-                        if(reflect.isSelected()){
-                            double[][] array = {{-1.,0.,0, 0},{0, 1, 0, 0},{0, 0, 1, 0.}, {0, 0, 0, 1}};
-                            Matrix reflect = new Matrix(array);
-                            affineTransform=reflect.times(affineTransform);
-                        }
+                            if(bdvUI.getOpenFilePanel().getOption2()){ // if live specimen
+                                double[][] array = {{1., 0., 0, 0}, {0, 1, 0, 0}, {0, 0, 4.999, 0.}, {0, 0, 0, 1}};
+                                Matrix dsInZ = new Matrix(array);
+                                affineTransform = affineTransform.times(dsInZ);
+                            }
+
+                            if (reflect.isSelected()) {
+                                double[][] array = {{-1., 0., 0, 0}, {0, 1, 0, 0}, {0, 0, 1, 0.}, {0, 0, 0, 1}};
+                                Matrix reflect = new Matrix(array);
+                                affineTransform = reflect.times(affineTransform);
+                            }
 
                             A00.setText(String.valueOf(affineTransform.get(0, 0)));
                             A01.setText(String.valueOf(affineTransform.get(0, 1)));
@@ -207,7 +211,7 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
                             A22.setText(String.valueOf(affineTransform.get(2, 2)));
                             A23.setText(String.valueOf(affineTransform.get(2, 3)));
 
-                        return null;
+                            return null;
 
                         }
                     });
@@ -218,17 +222,25 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
 
     }
 
-    private void setupSaveAffineTransformButton() {
+    private void setupSaveAffineTransformButton(BigDataViewerUI bdvui) {
         saveAffineTransformButton.setBackground(Color.WHITE);
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle("Choose Directory");
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
         saveAffineTransformButton.addActionListener(e -> {
             if (e.getSource() == saveAffineTransformButton) {
+                String s = bdvui.getOpenFilePanel().getDirectory() + "/" + (String) imageList.getSelectedItem();
+                if (reflect.isSelected()) {
+                    fc.setSelectedFile(new File(s.substring(0, s.length() - 4) + "_reflected.csv"));
+                } else {
+                    fc.setSelectedFile(new File(s.substring(0, s.length() - 4) + "_not_reflected.csv"));
+                }
 
-                int returnVal = fc.showOpenDialog(null);
+                fc.setDialogTitle("Choose Files");
+                fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+                int returnVal = fc.showSaveDialog(null);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
+
                     writeAffineTransformToCSV(file.getAbsolutePath());
 
                 }
@@ -237,8 +249,6 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
         });
 
     }
-
-
 
 
     private void setupBrowseAffineTransformButton() {
@@ -264,15 +274,12 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
     }
 
 
-
     private void setupPanel() {
 
         this.setBackground(Color.white);
         this.setBorder(new TitledBorder(""));
         this.setLayout(new MigLayout("fillx", "", ""));
     }
-
-
 
 
     private void setupRunButton(BigDataViewerUI bdvUI) {
@@ -290,8 +297,15 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
 
                             System.out.println("start calculation");
                             Img<UnsignedShortType> source = (Img<UnsignedShortType>)
-                                    new ImgOpener().openImgs((String) imageList.getSelectedItem()).get(0);
-                            Img<UnsignedShortType> target = ArrayImgs.unsignedShorts(source.dimension(0),source.dimension(1), source.dimension(2));
+                                    new ImgOpener().openImgs(bdvUI.getOpenFilePanel().getDirectory() + "/" + (String) imageList.getSelectedItem()).get(0);
+                            Img<UnsignedShortType> target;
+                            if(bdvUI.getOpenFilePanel().getOption2()){
+                                 target= ArrayImgs.unsignedShorts(source.dimension(0), source.dimension(1), 5*source.dimension(2));
+                            }else{
+                                target = ArrayImgs.unsignedShorts(source.dimension(0), source.dimension(1), source.dimension(2));
+                            }
+
+
                             affineTransform3D = new AffineTransform3D();
                             affineTransform3D.set(Double.parseDouble(A00.getText()), 0, 0);
                             affineTransform3D.set(Double.parseDouble(A01.getText()), 0, 1);
@@ -313,7 +327,7 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
                                     transformed = RealViews.affine(interpolated, affineTransform3D);
                             RandomAccessibleInterval<UnsignedShortType>
                                     rai = Views.interval(Views.raster(transformed), target);
-                            bdvUI.addImage(rai, "transformedimage", Color.white);
+                            bdvUI.addImage(rai, "transformed_" + imageList.getSelectedItem(), Color.white);
                             System.out.println("done calculation");
                             return null;
 
@@ -341,10 +355,10 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
             BufferedReader reader = new BufferedReader(new FileReader(filename));
             String l = reader.readLine();
             int row = 0;
-            while(l != null ){
-                if(l.contains("#")){
+            while (l != null) {
+                if (l.contains("#")) {
                     l = reader.readLine();
-                }else {
+                } else {
                     String[] tokens = l.split(" ");
 
                     affineTransform.set(row, 0, Float.parseFloat(tokens[0]));
@@ -370,8 +384,8 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
         final String COMMA_DELIMITER = " ";
         final String NEW_LINE_SEPARATOR = "\n";
         FileWriter fileWriter = null;
+        final String fileName = path;
 
-        final String fileName = path + "/AffineTransform_" + java.time.LocalDateTime.now() + ".csv";
 
         try {
             fileWriter = new FileWriter(fileName);
@@ -401,11 +415,55 @@ public class TransformImagePanel<I extends IntegerType<I>, T extends NumericType
         }
     }
 
+    /*private void writeAffineTransformToCSV(String path) {
+        final String COMMA_DELIMITER = " ";
+        final String NEW_LINE_SEPARATOR = "\n";
+        FileWriter fileWriter = null;
+        final String fileName;
+        String[] filesplit = affineTransformTextField.getText().split("/");
+        if(reflect.isSelected()){
+             fileName= path + "/"+filesplit[filesplit.length-1].substring(0, filesplit[filesplit.length-1].length() -4)+ "_reflected.csv";
+        }else{
+            fileName = path + "/"+filesplit[filesplit.length-1].substring(0, filesplit[filesplit.length-1].length() -4)+ "_not_reflected.csv";
+        }
 
-    public String getImageOne() {
+
+        try {
+            fileWriter = new FileWriter(fileName);
+            for (int i = 0; i < affineTransform.getRowDimension(); i++) {
+                for (int j = 0; j < affineTransform.getColumnDimension(); j++) {
+                    fileWriter.append(String.valueOf(affineTransform3D.get(i, j)));
+                    fileWriter.append(COMMA_DELIMITER);
+
+                }
+                fileWriter.append(NEW_LINE_SEPARATOR);
+
+            }
+
+
+        } catch (Exception e) {
+            System.out.println("Error in CSVFileWriter !!!");
+            e.printStackTrace();
+        } finally {
+
+            try {
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                System.out.println("Error while flushing/closing fileWriter !!!");
+                e.printStackTrace();
+            }
+        }
+    }
+*/
+
+    public String getImageSelected() {
         return (String) this.imageList.getSelectedItem();
 
     }
 
 
+    public String getFileName() {
+        return this.affineTransformTextField.getText();
+    }
 }

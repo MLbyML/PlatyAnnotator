@@ -16,8 +16,6 @@ public class RichFeaturePoint {
     private int greenOld;
     private int blueOld;
     private boolean isSelected;
-    private String gene;
-    private double geneExpression;
     private int label;
 
 
@@ -34,6 +32,18 @@ public class RichFeaturePoint {
         this.blue = blue;
         this.blueOld = blue;
         this.isSelected = false;
+    }
+
+    public RichFeaturePoint(){
+        this.x= 0;
+        this.y= 0;
+        this.z= 0;
+        this.scale = -1;
+        this.value = -1;
+        this.red = 0;
+        this.green = 0;
+        this.blue = 0;
+        this.label=-1;
     }
 
 
@@ -109,15 +119,18 @@ public class RichFeaturePoint {
     }
 
     public void setEmpty(){
-        this.x= -1;
-        this.y= -1;
-        this.z= -1;
-        this.scale= -1;
-        this.value= -1;
-        this.red= -1;
-        this.green= -1;
-        this.blue= -1;
+        this.x= 0;
+        this.y= 0;
+        this.z= 0;
+        this.scale = 0;
+        this.value = 0;
+        this.red = 0;
+        this.green = 0;
+        this.blue = 0;
+        this.label=-1;
     }
+
+
     public void setSelected(boolean b) {
         this.isSelected = b;
     }
@@ -147,11 +160,6 @@ public class RichFeaturePoint {
         return this.blueOld;
     }
 
-    public void setGeneExpression(String text, double val) {
-        this.gene = text;
-        this.geneExpression = val;
-
-    }
 
     public void setLabel(int name){
         this.label=name;
@@ -159,5 +167,25 @@ public class RichFeaturePoint {
 
     public int getLabel() {
         return this.label;
+    }
+
+    public boolean isEmpty() {
+        if(this.label==-1){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public void set(RichFeaturePoint addedPoint) {
+        this.x=addedPoint.x;
+        this.y=addedPoint.y;
+        this.z=addedPoint.z;
+        this.red=addedPoint.red;
+        this.green=addedPoint.green;
+        this.blue=addedPoint.blue;
+        this.label=addedPoint.label;
+        this.value=addedPoint.value;
+        this.scale=addedPoint.scale;
     }
 }

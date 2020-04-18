@@ -35,10 +35,7 @@ import bdv.ui.panel.control.BehaviourTransformEventHandlerSwitchable;
 import bdv.ui.panel.lut.ColorTableConverter;
 import bdv.ui.panel.projector.AccumulateProjectorAlphaBlendingARGB;
 import bdv.ui.panel.uicomponents.*;
-import bdv.ui.panel.uicomponents.ProcessTimeFrame.AnnotateNucleiPanel;
-import bdv.ui.panel.uicomponents.ProcessTimeFrame.MyOverlay;
-import bdv.ui.panel.uicomponents.ProcessTimeFrame.OpenFilePanel;
-import bdv.ui.panel.uicomponents.ProcessTimeFrame.TransformImagePanel;
+import bdv.ui.panel.uicomponents.ProcessTimeFrame.*;
 import bdv.util.*;
 import bdv.viewer.Source;
 import bdv.viewer.render.AccumulateProjectorFactory;
@@ -88,6 +85,7 @@ public class BigDataViewerUI<I extends IntegerType<I>, T extends NumericType<T>,
     private static final String TRANSFORM_IMAGE_CARD_NAME="Transform Image";
     private static final String OPEN_FILE_CARD_NAME = "Open File";
     private static final String ANNOTATE_NUCLEI_CARD_NAME = "Annotate Nuclei";
+    private static final String LOAD_TRANSFORM_ANNOTATIONS_CARD_NAME="Load Transform and Annotations";
 
 
     /**
@@ -130,7 +128,7 @@ public class BigDataViewerUI<I extends IntegerType<I>, T extends NumericType<T>,
     private TransformationPanel<I, T, L> transformationPanel;
 
     private AnnotateNucleiPanel<I, T, L> annotateNucleiPanel;
-
+    private LoadTransform_AnnotationsPanel<I, T, L> loadTransform_annotationsPanel;
     /* Source & Group selection panel */
     private SelectionAndGroupingTabs<I, T, L> selectionAndGrouping;
 
@@ -156,6 +154,7 @@ public class BigDataViewerUI<I extends IntegerType<I>, T extends NumericType<T>,
 
     private Logger logger;
 
+    private List<RichFeaturePoint> thresholdedLocalMinima;
 
 
 
@@ -229,7 +228,12 @@ public class BigDataViewerUI<I extends IntegerType<I>, T extends NumericType<T>,
 
         controlsPanel = new CardPanel();
 
-
+        thresholdedLocalMinima = new ArrayList<>(12);
+        System.out.println("Total number of initialized minima is" + thresholdedLocalMinima.size());
+        for (int i=0; i< 12; i++){
+            thresholdedLocalMinima.add(new RichFeaturePoint());
+        }
+        System.out.println("Total number of initialized minima after" + thresholdedLocalMinima.size());
         // Add log card (Card No. 0)
         loggingPanel = new LoggingPanel(ctx);
         loggingPanel.setBackground(Color.WHITE);
@@ -270,7 +274,9 @@ public class BigDataViewerUI<I extends IntegerType<I>, T extends NumericType<T>,
         annotateNucleiPanel = new AnnotateNucleiPanel<>(cs, es, ts, ops, this);
         controlsPanel.addNewCard(new JLabel(ANNOTATE_NUCLEI_CARD_NAME), false, annotateNucleiPanel);
 
-
+        //
+        loadTransform_annotationsPanel= new LoadTransform_AnnotationsPanel<>(cs, es, ts, ops, this);
+        controlsPanel.addNewCard(new JLabel(LOAD_TRANSFORM_ANNOTATIONS_CARD_NAME), false, loadTransform_annotationsPanel);
 
         //Register Images Panel
         //transformImagePanel=new TransformImagePanel<>(cs, es,ts, ops, this);
@@ -337,6 +343,13 @@ public class BigDataViewerUI<I extends IntegerType<I>, T extends NumericType<T>,
         groupNames.add("Images");
         bdv.addImg(img, img.randomAccess().get().getClass().getSimpleName(), name, true, groupNames, color,
                 new AffineTransform3D(), Double.NaN, Double.NaN);
+    }
+
+    public synchronized void addImage(final RandomAccessibleInterval<T> img, final String name, final Color color, final AffineTransform3D transformation) {
+        final Set<String> groupNames = new HashSet<>();
+        groupNames.add("Images");
+        bdv.addImg(img, img.randomAccess().get().getClass().getSimpleName(), name, true, groupNames, color,
+                transformation, Double.NaN, Double.NaN);
     }
 
     public synchronized BdvOverlaySource addOverlay(BdvOverlay overlay, final String name, Color white) {
@@ -487,5 +500,15 @@ public class BigDataViewerUI<I extends IntegerType<I>, T extends NumericType<T>,
     }
 
 
+    public OpenFilePanel getOpenFilePanel() {
+        return openFilePanel;
+    }
 
+    public LoadTransform_AnnotationsPanel getLoadTransform_AnnotationsPanel() {
+        return loadTransform_annotationsPanel;
+    }
+
+    public List<RichFeaturePoint> getThresholdedLocalMinima() {
+        return this.thresholdedLocalMinima;
+    }
 }
